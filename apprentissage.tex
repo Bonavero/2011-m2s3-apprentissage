@@ -38,13 +38,25 @@ Un certain nombre de techniques on été misent au point pour tenter de répondr
 Toutes ces techinques ont pour but de restreindre le parcours de recherche.
 
 \subsection{Quel est le paradigme adopté ?}
-Ordering based search.
+Comme beaucoup de problèmes en informatique, celui-ci peut se
+simplifier en utilisant un niveau d'indirection.
+
+Plutôt que de chercher la meilleure solution dans l'espace des
+structures de réseaux, cet article prend en compte qu'il est
+relativement facile de trouver la meilleure structure pour un ordre de
+variables donné, avec la condition que le degré entrant des variables
+soit borné.
+
+La solution proposée est donc d'effectuer une recherche locale dans
+l'espace des ordres des variables, qui est beaucoup plus petit
+($2^{O(n \log n}$) que l'espace des structures de réseaux ($2^{\Omega(n^2)}$).
+
 \subsection{Quels sont les principaux résultats obtenus ?}
 relativement bon comparé à d'autre algorithme recents (à revoir).
 
 \section{Apprentissage Bayesien :}
 \subsection{Décrire le fonctionnement de l'apprentissage Bayésien}
-(pas sûr du toutà, trouver la meilleure structure pour décrire un ensemble de données définies
+(pas sûr du tout, trouver la meilleure structure pour décrire un ensemble de données définies
 
 \subsection{Que signifie la fonction de scoring ?}
 La fonction de "scoring" est une fonction permet de noter chaques structure selon des critères, ce qui va permettre de comparer celles-ci entre elles.
