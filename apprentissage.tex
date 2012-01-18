@@ -19,11 +19,24 @@
 \maketitle
 \newpage
 % Document ici.
+
+Liens qui peut-être utile : 
+http://asi.insa-rouen.fr/enseignants/~pleray/RB2003/2-ApprentissageStructure.pdf
+
 \section{Résumé de l’article :}
 \subsection{Quel est le problème étudié dans l’article ?}
 Le problème consiste en l'apprentissage de structures de réseaux Bayesiens à partir des données.
 (page 1, Absract, "début").
+Le nombre de structures possibles pour un réseaux à n nœud est exponentiel.
 \subsection{Quels sont les travaux relatifs au problème ? }
+Un certain nombre de techniques on été misent au point pour tenter de répondre au problème...
+- Ordering-based search (Méthode utilisée ici).
+- wawelet-based search (à vérifier à plutôt l'air d'être un outil utilisé combiné avec une autre technique).
+- Restriction de l'espaces des arbres.
+- greedy search.
+
+Toutes ces techinques ont pour but de restreindre le parcours de recherche.
+
 \subsection{Quel est le paradigme adopté ?}
 Ordering based search.
 \subsection{Quels sont les principaux résultats obtenus ?}
@@ -32,9 +45,13 @@ relativement bon comparé à d'autre algorithme recents (à revoir).
 \section{Apprentissage Bayesien :}
 \subsection{Décrire le fonctionnement de l'apprentissage Bayésien}
 \subsection{Que signifie la fonction de scoring ?}
+La fonction de "scoring" est une fonction permet de noter chaques structure selon des critères, ce qui va permettre de comparer celles-ci entre elles.
+La fonction de scoring se doit donc d'être rapide, et aussi d'être localement décomposable.
 
 \section{L'algorithme de recherche}
 \subsection{Décrire l'espace de recherche utilisant les ordres}
+
+
 \subsection{Décrire la recherche, le caching et le pruning}
 
 \section{Commentaires :}
