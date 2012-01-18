@@ -11,31 +11,88 @@
   urlcolor=black%
 }
 
-\title{-- Rapport -- \\ Ordering-Based Search: A Simple and Effective Algorithm for Learning Bayesian Networks}
+\title{Rapport\\Ordering-Based Search: A Simple and Effective Algorithm for Learning Bayesian Networks}
 \author{BONAVERO Yoann \and DUPÉRON Georges}
 
 \begin{document}
 
 \maketitle
-\newpage
-% Document ici.
+%\newpage
 
-Liens qui peut-être utile : 
-http://asi.insa-rouen.fr/enseignants/~pleray/RB2003/2-ApprentissageStructure.pdf
+% Lien qui peut être utile : 
+% http://asi.insa-rouen.fr/enseignants/~pleray/RB2003/2-ApprentissageStructure.pdf
 
 \section{Résumé de l’article :}
 \subsection{Quel est le problème étudié dans l’article ?}
-Le problème consiste en l'apprentissage de structures de réseaux Bayesiens à partir des données.
-(page 1, Absract, "début").
-Le nombre de structures possibles pour un réseaux à n nœud est exponentiel.
-\subsection{Quels sont les travaux relatifs au problème ? }
-Un certain nombre de techniques on été misent au point pour tenter de répondre au problème...
-- Ordering-based search (Méthode utilisée ici).
-- wawelet-based search (à vérifier à plutôt l'air d'être un outil utilisé combiné avec une autre technique).
-- Restriction de l'espaces des arbres.
-- greedy search.
 
-Toutes ces techinques ont pour but de restreindre le parcours de recherche.
+Le problème consiste en l'apprentissage de structures de réseaux
+Bayesiens à partir des données.
+
+Dans un problème d'apprentissage, on cherche à prédire des variables
+en fonction des valeurs d'autres variables. Il y a une relation de
+causalité entre certaines variables~: la présence d'une certaine
+valeur dans l'une modifie la distribution de probabilité des valeurs
+dans l'autre.
+
+Un réseau bayésien est un graphe dirigé où les nœuds sont des
+«variables aléatoires» (généralement des quantités observables ou des
+variables intermédiaires qui sont des sortes d'hypothèses
+réutilisables par d'autres variables), où les arcs représentent la
+dépendance de la variable d'arrivée par rapport à la variable de
+départ, et où chaque nœud possède une fonction de probabilité
+permettant de déterminer la probabilité de ses valeurs en fonction des
+probabilités de ses entrées.
+
+L'apprentissage de la structure d'un réseau bayésien (quelles
+variables sont reliées à quelles autres) à partir de données mesurées
+au préalable permet d'éviter la nécessité d'avoir des experts capable
+de renseigner le système sur la causalité entre les différentes
+variables. Ce problème est cependant NP-complet, et son espace de
+recherche très grand (le nombre de structures possibles pour un
+réseaux à $n$ nœuds est exponentiel). Les solutions sont donc des
+recherches heuristiques de la meilleure structure.
+
+\subsection{Quels sont les travaux relatifs au problème ? }
+Chickering, en 1996 puis 2003 a établi que le problème de trouver la
+structure de réseau optimale d'un réseau bayésien était un problème
+NP-complet.
+
+D'autres chercheurs ont établi que trouver la structure de réseau
+optimale d'un réseau bayésien, avec un ordre donné sur les variables,
+n'était pas NP-complet. De plus, si l'on limite à $k$ le nombre d'arcs
+entrant pour chaque variable, la complexité est $O(n^k)$ avec $n$ le
+nombre de variables.
+
+Plusieurs algorithmes existent pour effectuer une recherche
+heuristique de la structure de réseau optimale~:
+\begin{itemize}
+\item Recherche locale en utilisant un algorithme gourmand, avec des
+  «listes Tabou» qui permettent d'éviter de défaire les modifications
+  que l'on vient juste d'appliquer à la structure, et donc de revenir
+  en arrière. C'est l'algorithme de base que peu d'autres algorithmes
+  arrivent à améliorer de manière significative.
+\item Un algorithme génétique portant sur les structures des réseaux.
+\item Markov Chain Monte Carlo sur l'ordre des variables.
+% TODO Yoann : tu sors ça d'où ? \item Restriction de l'espaces des arbres.
+% TODO Yoann : tu sors ça d'où ? \item Wawelet-based search (à vérifier à plutôt l'air d'être un outil utilisé combiné avec une autre technique).
+\item OR-search (Optimal Reinsertion). En 2003, Moore et Wong ont
+  proposé un opérateur de modification de la structure (voir
+  ci-dessous), qui permet à la recherche locale d'être plus efficace.
+\item Ordering-based search (Méthode utilisée ici).
+\item D'autres algorithmes ont été proposés, mais sont soit très
+  compliqués à implémenter, soit n'apportent pas d'amélioration réelle
+  à l'algorithme de base de recherche locale.
+\end{itemize}
+
+La plupart de ces algorithmes effectuent une recherche locale, et
+lorsqu'ils atteignent un minimum local, redémarrent avec une autre
+structure ou un autre ordre de départ.
+
+Le principe de ces recherches locales est de partir d'une structure
+(ou d'un ordre) donnée, et de la modifier avec des opérateurs (par
+exemple ajouter un arc entre $A$ et $B$), et sélectionner parmi les
+modifications possibles celle qui améliore le plus la fonction de
+score.
 
 \subsection{Quel est le paradigme adopté ?}
 Comme beaucoup de problèmes en informatique, celui-ci peut se
@@ -52,7 +109,27 @@ l'espace des ordres des variables, qui est beaucoup plus petit
 ($2^{O(n \log n}$) que l'espace des structures de réseaux ($2^{\Omega(n^2)}$).
 
 \subsection{Quels sont les principaux résultats obtenus ?}
-relativement bon comparé à d'autre algorithme recents (à revoir).
+
+Les auteurs de l'article ont comparé leurs résultats avec ceux obtenus
+par une version optimisée de l'algorithme de base, et ceux obtenus par
+l'algorithme OR-search.
+
+Ils ont trouvé que Oredering-Based search prennait beaucoup de temps
+de préparation, mais qu'ensuite la convergeance était
+quasi-instantanée.
+
+Lorsque le problème est simple (peu de variables et beaucoup
+d'exemples desquels apprendre), l'algorithme de base (recherche locale
+gourmande et listes de Tabou) et Ordering-Based search trouvent les
+mêmes résultats. Cependant, lorsque le problème devient plus complexe,
+Ordering-Based search trouve de meilleurs structures de réseau.
+
+N'ayant pas la même machine pour effectuer les benchmark, et n'ayant
+pas utilisé les mêmes mesures (temps CPU contre temps d'exécution
+réel), les auteurs de l'article n'ont pas pu comparer correctement
+Ordering-Based search avec OR-search, cependant les performances sont
+suffisemment différentes pour pouvoir affirmer qu'Ordering-Based
+search est plus efficace qu'OR-search.
 
 \section{Apprentissage Bayesien :}
 \subsection{Décrire le fonctionnement de l'apprentissage Bayésien}
