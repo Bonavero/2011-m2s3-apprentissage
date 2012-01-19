@@ -133,11 +133,20 @@ search est plus efficace qu'OR-search.
 
 \section{Apprentissage Bayesien :}
 \subsection{Décrire le fonctionnement de l'apprentissage Bayésien}
-(pas sûr du tout, trouver la meilleure structure pour décrire un ensemble de données définies
+l'apprentissage bayésiens consiste à déterminer la meilleure structure
+pour décrire un ensemble de données définies.
+L'apprentissage, la recherche de cette structure se base une comparaison
+de l'ensembles des structures possible pour un ensemble de données.
+La fonction fonction de scoring est par exemple un outil qui permet de
+choisir plutôt une stucture qu'une autre. Il existe d'autre méthodes qui
+permettent du comparer les structures entres elles afin d'améliorer la recherche.
 
 \subsection{Que signifie la fonction de scoring ?}
-La fonction de "scoring" est une fonction permet de noter chaques structure selon des critères, ce qui va permettre de comparer celles-ci entre elles.
-La fonction de scoring se doit donc d'être rapide, et aussi d'être localement décomposable.
+La fonction de "scoring" est une fonction permettant de "noter", d'évaluer
+ chaques structure selon diverses critères critères. cette notation va permettre
+ de comparer celles-ci entre elles.
+La fonction de scoring se doit donc d'être à la fois rapide, mais aussi d'être
+localement décomposable afin de traiter des sous graphes..
 
 \section{L'algorithme de recherche}
 \subsection{Décrire l'espace de recherche utilisant les ordres}
