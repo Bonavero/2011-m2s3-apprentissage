@@ -11,6 +11,10 @@
   urlcolor=black%
 }
 
+\usepackage{amsmath}
+\DeclareMathOperator{\Pa}{Pa}
+\DeclareMathOperator{\argmax}{argmax}
+
 \title{Rapport\\Ordering-Based Search: A Simple and Effective Algorithm for Learning Bayesian Networks}
 \author{BONAVERO Yoann \and DUPÉRON Georges}
 
@@ -150,10 +154,120 @@ localement décomposable afin de traiter des sous graphes..
 
 \section{L'algorithme de recherche}
 \subsection{Décrire l'espace de recherche utilisant les ordres}
+L'espace de recherche est l'ensemble des ordres sur les variables du
+réseau.
 
+Pour passer d'un état (un ordre) à un autre dans la recherche locale,
+l'opérateur utilisé est la permutation de deux variables adjacentes.
+
+Pour un ordre sur $n$ variables, il y a donc $n-1$ ordres suivants
+possibles en appliquant cet opérateur.
+
+\subsection{Recherche dans cet espace}
+
+$U_{i,\prec}$ est l'ensemble des ensembles de de variables précédant
+$X_i$ dans l'ordre $\prec$, de cardinal inférieur ou égal à $k$.
+
+$\Pa_\prec(X_i)$ est l'ensemble de parents optimal pour la variable
+$X_i$, défini comme étant l'ensemble de variables précédant $X_i$ dans
+$\prec$ et de cardinal inférieur ou égal à $k$, $\mathbf{U} \in
+U_{i,\prec}$, maximisant le $score(X_i, U)$.
+
+Le cardinal de $U_{i,\prec}$ pour une variable $X_i$ donnée est le
+nombre de combinaisons de moins de $k$ éléments pris dans les $i-1$
+variables précédentes. Le cardinal maximal est donc celui de
+$U_{n,\prec}$, et vaut $\binom{n}{k}$.
+
+Le meilleur réseau $G^*_\prec$ consistant avec un ordre $\prec$ est le
+graphe dont l'ensemble des arcs entrant dans chaque nœud est le
+meilleur ensemble de parents compatible avec cet ordre, soit
+$\Pa_\prec(X_i)$.
+
+Le meilleur réseau est le réseau $G^*_{\prec^*}$ c'est à dire le
+meilleur réseau pour l'ordre $\prec*$. $\prec*$ est l'ordre pour
+lequel «le meilleur réseau pour cet ordre» sera le meilleur, autrement
+dit $\argmax_{\prec} score(G^*_\prec)$.
 
 \subsection{Décrire la recherche, le caching et le pruning}
 
+\subsubsection{Caching}
+
+Lorsqu'on passe d'un ordre à un autre, l'ensemble $U_{i,prec}$ des
+ensembles de variables précédant une variable $X_i$ reste le même,
+sauf pour les deux variables permutées. En effet, si on permute $X_a$
+et $X_b$, avec $a + 1 = b$, et soit $a' < a$ et $b' > b$, alors
+l'ensemble des variables précédant $X_{a'}$ avant permutation reste le
+même après permutation, vu qu'on n'a pas inséré ni enlevé de variables
+dans l'intervalle $\{X_1, \dots, X_{a'-1}\}$, et l'ensemble des
+variables précédent $X_{b'}$ avant permutation reste le même après
+permutation, car $\{X_1, \dots, X_{a}, X_{b}, \dots, X_{b'-1}\}$ est
+devenu $\{X_1, \dots, X_{b}, X_{a}, \dots, X_{b'-1}\}$~: $X_a$ et
+$X_b$ ont été échangées, mais les variables présentes dans
+l'intervalle $\{X_1, \dots, X_{b'-1}\}$ n'a pas changé.
+
+Il est donc possible de conserver («mettre en cache») l'ensemble de
+parents optimal $\Pa_\prec(X_i)$ pour les variables $X_i, i \neq a
+\wedge i \neq b$ d'un état à l'autre, et il faut recalculer seulement
+$\Pa_\prec(X_a)$ et $\Pa_\prec(X_b)$.
+
+Lorsqu'on considère quelle est la meilleure permutation à effectuer,
+pour passer de l'état $\prec$ à l'état $\prec'$ on calcule pour chaque
+$\prec'$ la différence entre $score(G^*_\prec)$ (l'ancien score) et
+$score(G^*_{\prec'})$ (le nouveau score).
+
+L'application de la permutation des variables $X_a$ et $X_b$ ne
+modifie la différence de score entre $\prec'$ et les états $\prec''$
+obtenus en appliquant une permutation sur $\prec'$, sauf si la
+nouvelle permutation porte sur les variables $X_a$ et $X_b$, car
+l'ensemble $\Pa_\prec(X_i)$ n'a pas été modifié pour les variables
+autres que $X_a$ et $X_b$, comme vu ci-dessus, et la fonction de score
+est décomposable en la somme du score de chaque ensemble de
+parents. Autrement dit, les permutations sur $\prec'$ qui ne portent
+pas sur $X_a$ ou $X_b$ auront le même impact que lorsqu'on les
+considérait sur $\prec$.
+
+Pour recalculer les différences de score sur les permutations
+possibles après la permutation de $X_a$ et $X_b$ (avec $a + 1 = b$),
+on procède donc de la manière suivante~:
+\begin{itemize}
+\item Permuation $X_i,X_j$ avec $j < a$ et $i+1=j$~: la différence de
+  score n'a pas changé.
+\item Permuation $X_i,X_j$ avec $j = a$ et $i+1=j$~: Il faut calculer
+  le nouveau score $score(G^*_{\prec'})$.
+\item Permuation $X_i,X_j$ avec $i = a$ et $j = b$ et $i+1=j$~: Cela
+  équivaut à «défaire» la permutation qu'on vient juste d'appliquer,
+  soit transformer $\prec'$ en $\prec''=\prec$. La différence de score
+  $score(G^*_{\prec'' = \prec}-G^*_{\prec'}$ est donc l'opposée de la
+  différence de score $score(G^*_{\prec'}-G^*_{\prec}$.
+\item Permuation $X_i,X_j$ avec $i = b$ et $i+1=j$~: Il faut calculer
+  le nouveau score $score(G^*_{\prec'})$.
+\item Permuation $X_i,X_j$ avec $i > b$ et $i+1=j$~: la différence de
+  score n'a pas changé.
+\end{itemize}
+Cela signifie qu'à chaque étape, il y a au plus deux scores à
+recalculer.
+
+\subsubsection{Pruning}
+
+Lorsqu'on considère les ensembles de parents possibles pour une
+variable $X_i$, si on prend deux ensembles $\mathbf{U}' \subset
+\mathbf{U}$, alors si $score(X_i, \mathbf{U}) \leq score(X_i,
+\mathbf{U'})$, on peut éliminer $\mathbf{U}$ de toutes les recherches
+futures, puisqu'à chaque fois que $\mathbf{U}$ sera un ensemble de
+parents possibles pour $X_i$, $\mathbf{U}'$ sera aussi un ensemble de
+parents possible, et préférable (car de meilleur score), puisqu'il est
+inclus dans $\mathbf{U}$, donc respectera tout autant l'ordre $\prec$,
+et il est plus petit, donc $|\mathbf{U}| \leq k \Rightarrow
+|\mathbf{U}'| < k$.
+
+Il est possible d'éliminer plus d'ensembles de parents possibles en
+n'autorisant comme parents de $X_i$ que les variables qui sont en
+forte corrélation avec $X_i$. Cela permet d'accélérer la recherche du
+meilleur ensemble de parents, cependant il est possible que cela
+élimine l'ensemble de parents faisant partie de la solution optimale,
+donc avec cette modification, même en essayant tous les ordres sur les
+variables, on n'a pas la garantie de trouver la meilleure structure de
+réseau.
 
 \section{Commentaires :}
 \subsection{Quels sont les avantages et inconvénients de la méthode proposée (analyse détaillée demandée) ?}
