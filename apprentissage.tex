@@ -288,7 +288,8 @@ on procède donc de la manière suivante~:
   score n'a pas changé.
 \end{itemize}
 Cela signifie qu'à chaque étape, il y a au plus deux scores à
-recalculer.
+recalculer. Il faut cependant trouver pour l'ordre initial le meilleur
+ensemble de parents compatible avec cet ordre pour chaque variable.
 
 \subsubsection{Pruning}
 
@@ -314,6 +315,54 @@ réseau.
 
 \section{Commentaires :}
 \subsection{Quels sont les avantages et inconvénients de la méthode proposée (analyse détaillée demandée) ?}
+
+Cette méthode présente deux grands avantages du point de vue algorithmique~:
+\begin{itemize}
+\item Elle effectue sa recherche sur l'espace des ordres de variables,
+  de taille $2^{O(n \log n)}$, tandis que la plupart des autres
+  méthodes effectuent une recherche sur l'espace des structures, de
+  taille $2^{\Omega(n^2)}$. L'espace des solutions possibles est donc
+  moins grand, même s'il faut pour chaque ordre de variable trouver la
+  meilleure structure cohérente avec cet ordre, ce qui rajoute un coût
+  à chaque étape de la recherche.
+\item L'opérateur permettant de passer d'un état à l'autre est la
+  permutation de deux variables dans l'ordre des variables, tandis que
+  la plupart des autres méthodes appliquent des modifications sur les
+  structures. Les meilleures structures pour deux ordres similaires
+  étant souvent très différentes, cela permet d'éviter de se bloquer
+  trop souvent sur des maxima locaux, puisque passer d'un état à un
+  autre (d'un ordre à un autre) donnera des structures bien
+  différentes, et si la première contenait une sous-structure
+  l'empêchant de dépasser un certain maximum local après quelques
+  modifications sur la structure elle-même, il est fort probable que
+  la structure radicalement différente obtenue en modifiant l'ordre
+  des variables n'aura pas ce même défaut.
+\end{itemize}
+
+L'inconvénient de cette méthode est le temps de préparation
+nécessaire, à savoir l'évaluation du score de chaque ensemble de
+parents possible pour chaque variable, pour l'ordre de départ. Les
+auteurs ont utilisé la structure de données «AD-Tree» qui permet de
+calculer ces meilleurs ensembles de parents en un temps proportionnel
+au nombre d'instances du problème à analyser.
+
+Cependant cette étape prend la majeure partie du temps d'exécution de
+l'algorithme, puisque passé ce stade, l'algorithme converge
+quasi-instantanément vers un maximum (local ou, avec de la chance
+global). Il est à noter que durant ce temps, l'algorithme ne fournit
+pas de solution, même sous-optimale, alors que l'algorithme de base
+commence à fournir des solutions sous-optimales très rapidement.
+
+Dans une situation où l'on voudrait pouvoir lancer l'algorithme, et
+pouvoir l'arrêter à n'importe quel moment, en conservant la meilleure
+solution trouvée dans le temps imparti, ceci serait gênant. De plus,
+lorsqu'on a accès à un grand nombre d'instances par rapport au nombre
+de variables, le rapport signal/bruit est meilleur, et l'algorithme de
+base s'exécute plus rapidement, tandis que Ordering-based search perd
+plus de temps à construire les meilleurs ensembles de parents des
+variables, au point que l'algorithme de base peut dépasser
+Ordering-based search.
+
 \subsection{Est-il possible d'améliorer cette méthode pour apprendre des réseaux Bayésiens dont la tree-width est bornée ?}
 \subsection{Est-il possible d'apprendre plus efficacement des réseaux Bayésiens dont la structure est un arbre dirigé (ou une forêt) ?}
 
