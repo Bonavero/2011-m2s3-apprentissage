@@ -173,11 +173,26 @@ structures possibles (tous les graphes possibles ayant comme noeuds
 les variables du problème).
 
 \subsection{Que signifie la fonction de scoring ?}
-La fonction de "scoring" est une fonction permettant de "noter", d'évaluer
- chaques structure selon diverses critères critères. cette notation va permettre
- de comparer celles-ci entre elles.
-La fonction de scoring se doit donc d'être à la fois rapide, mais aussi d'être
-localement décomposable afin de traiter des sous graphes..
+
+La fonction de "scoring" est une fonction permettant de "noter",
+d'évaluer chaque structure selon les critères recherchés, pour
+comparer ces structures entre elles.
+
+On cherchera donc une structure maximisant cette fonction de
+scoring. Comme expliqué ci-dessous (section \ref{sec:caching}), pour
+que l'algorithme Ordering-based search fonctionne, il faut que la
+fonction de scoring soit localement décomposable, c'est à dire qu'elle
+est la somme du score de l'ensemble de parents de chaque variable.
+
+Cela permet de modifier l'ensemble de parents d'une variable et
+n'avoir à recalculer que le score de cette variable, celui des autres
+n'étant pas modifié.
+
+De plus, pour que les algorithmes de recherche puissent s'exécuter en
+un temps raisonnable, il faut que la fonction de scoring soit rapide,
+car elle sera exécutée au moins en partie (souvent sur les seules
+variables modifiées) sur chaque structure que l'algorithme de
+recherche examinera.
 
 \section{L'algorithme de recherche}
 \subsection{Décrire l'espace de recherche utilisant les ordres}
@@ -218,6 +233,7 @@ dit $\argmax_{\prec} score(G^*_\prec)$.
 \subsection{Décrire la recherche, le caching et le pruning}
 
 \subsubsection{Caching}
+\label{sec:caching}
 
 Lorsqu'on passe d'un ordre à un autre, l'ensemble $U_{i,prec}$ des
 ensembles de variables précédant une variable $X_i$ reste le même,
