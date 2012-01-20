@@ -137,13 +137,40 @@ search est plus efficace qu'OR-search.
 
 \section{Apprentissage Bayesien :}
 \subsection{Décrire le fonctionnement de l'apprentissage Bayésien}
-l'apprentissage bayésiens consiste à déterminer la meilleure structure
-pour décrire un ensemble de données définies.
-L'apprentissage, la recherche de cette structure se base une comparaison
-de l'ensembles des structures possible pour un ensemble de données.
-La fonction fonction de scoring est par exemple un outil qui permet de
-choisir plutôt une stucture qu'une autre. Il existe d'autre méthodes qui
-permettent du comparer les structures entres elles afin d'améliorer la recherche.
+
+L'apprentissage bayésien consiste à déterminer la meilleure structure
+du réseau bayésien. Ce réseau est un graphe dont les nœuds sont les
+variables du problème étudié, et les arcs représentent la dépendance
+d'une variable sur une autre~: La probabilité d'apparition des
+différentes valeurs d'une variable est conditionnée par les
+probabilités d'apparitions des valeurs de ses variables parentes.
+
+L'apprentissage est la recherche de cette structure se fait à partir
+d'un ensemble de données, des instanciations du problème. Ces
+instanciations sont des associations variable/valeur qui ont été
+mesurées pour ce problème.
+
+La meilleure structure sera donc intuitivement une structure qui
+représente l'ensemble des parents de chaque variable, de manière à ce
+qu'ajouter une variable à cet ensemble donne de moins bonnes
+prédictions (cette «parente» n'est pas pertinente dans les
+probabilités d'apparition des valeurs de la variable considérée), et
+de manière à ce qu'enlever une variable à cet ensemble donne de moins
+bonnes prédictions (cette «parente» conditionne les probabilités
+d'apparition des valeurs de la variable considérée).
+
+D'autres facteurs sont à prendre en compte pour décrire la «meilleure»
+structure, comme l'influence des variables parentes~: Lorsqu'on
+apprend un réseau bayésien à partir d'un ensemble d'instances limité,
+il est possible que certaines variables paraissent conditionner
+faiblement d'autres, alors qu'il s'agit juste d'un biais
+d'échantillonage, et cette corrélation n'apparaîtrait pas sur un
+ensemble de données plus large.
+
+L'apprentissage de cette structure se fera donc en recherchant la
+structure répondant le mieux à certains critères parmi toutes les
+structures possibles (tous les graphes possibles ayant comme noeuds
+les variables du problème).
 
 \subsection{Que signifie la fonction de scoring ?}
 La fonction de "scoring" est une fonction permettant de "noter", d'évaluer
